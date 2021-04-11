@@ -1,6 +1,6 @@
-# Family Board - in Python with JyServer and Flask
+# Family Board - in Python with Flask
 
-Use [jyserver](https://github.com/ftrias/jyserver) and [Flask](https://palletsprojects.com/p/flask/) for Family Board on **Raspberry Pi Zero W**.
+Use [Flask](https://palletsprojects.com/p/flask/) and HTML/CSS/JavaScript for Family Board on **Raspberry Pi Zero W**.
 
 ## configure Microsoft Graph / Outlook / Live calendar access
 
@@ -53,32 +53,6 @@ now `MSG_LOCALE` can be set (in the script which starts `server.py`)
 export MSG_LOCALE=de_DE.utf8
 ```
 
-## API access
-
-### refresh board
-
-trigger a refresh for the board (image + calendar) with the next cycle
-
-```PowerShell
-Invoke-RestMethod -Method Post -Uri http://localhost:8080/api/board/refresh
-```
-
-### place a message
-
-place a message that will be displayed with the next cycle; also invokes a refresh
-
-```PowerShell
-Invoke-RestMethod -Method Put -Uri http://localhost:8080/api/board/message -ContentType "application/json" -body '{"message":"Hello, world!"}'
-```
-
-### place a status
-
-place a status that will be displayed with the next cycle; does not invoke a refresh
-
-```PowerShell
-Invoke-RestMethod -Method Put -Uri http://localhost:8080/api/board/status -ContentType "application/json" -body '{"status":"Family present"}'
-```
-
 ---
 
 ## hints
@@ -90,65 +64,6 @@ source .venv/bin/activate
 ```
 
 from https://docs.python.org/3/library/venv.html
-
----
-
-### add log clean up
-
-```sh
-sudo nano /etc/logrotate.d/family-board
-```
-
-insert:
-```
-/home/pi/family-board-jyserver/family-board.log {
-  rotate 3
-  daily
-  compress
-  missingok
-  notifempty
-}
-```
-
-
-## issues
-
-### pip install pybluez
-
-in case of an `error: Microsoft Visual C++ 14.0 or greater is required`
-
-- install with `winget install Microsoft.VisualStudio.BuildTools`
-- modify installation - add C++ build tools - according to https://wiki.python.org/moin/WindowsCompilers
-
-### Kweb as alternate browser
-
-> rendering capabilities not compatible or sufficient for family board
-
-### Kweb needs Py2 as default
-
-https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
-
-```sh
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 2
-update-alternatives --list python
-update-alternatives --config python
-```
-
-### epiphany as alternate browser
-
-> was not able to get `epiphany-browser` working in application mode / with no titlebar etc.
-
-> `jyserver` to browser communication was not working reliably
-
-> `jyserver` + `epiphany-browser` was too resource intensive allowing almost no SSHing
-
-## check for other ideas
-
-https://blog.gordonturner.com/2020/06/30/raspberry-pi-full-screen-browser-2020-05-27-raspios-buster/
-https://dominik.debastiani.ch/2019/01/18/raspberry-pi-als-kiosk-pc-mit-browser/
-https://www.raspberrypi.org/forums/viewtopic.php?t=40860
-
 
 ---
 

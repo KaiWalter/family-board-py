@@ -11,6 +11,7 @@
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </head>
 
 <body>
@@ -44,33 +45,11 @@
 
     </div>
 
-    <!-- placeholder for pre-loading image -->
-    <div style="display:none;visibility:hidden;">
-        <img id="image" onload="updateImage();" />
-    </div>
-
     <script type="text/javascript">
         $(document).ready(function() {
             startTime();
-
-            function startTime() {
-                var today = new Date();
-                var h = today.getHours().toString().padStart(2, "0");
-                var m = today.getMinutes().toString().padStart(2, "0");
-                var s = today.getSeconds().toString().padStart(2, "0");
-                $(".clock").html(h + ":" + m + "<span class='sec'>" + s + "</span>");
-                var t = setTimeout(startTime, 500);
-            }
+            startMainLoop();
         });
-
-        function updateImage() {
-            $(".imageContainer").css({
-                background: "#000 url(" + $("#image").attr("src") + ") center center",
-                backgroundSize: "cover",
-                backgroundRepeat: "no-repeat"
-            });
-            $(".imageCreated").html($("#image").attr("alt"))
-        }
     </script>
 
 </body>

@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: server",
+            "type": "python",
+            "request": "launch",
+            "program": "src/server.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-a",
+                "0.0.0.0",
+                "-p",
+                "8080"
+            ],
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

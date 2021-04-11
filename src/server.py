@@ -6,7 +6,6 @@ import logging
 import os
 import sys
 
-import jyserver.Flask as jsf
 from flask import (Flask, jsonify, redirect, render_template, request,
                    send_from_directory, url_for)
 from flask_injector import FlaskInjector
@@ -21,22 +20,13 @@ from microsoft_graph import MicrosoftGraphAuthentication
 # initialize Flask session
 app = Flask(__name__)
 
-# Flask app
-@jsf.use(app)
-class App:
-    def __init__(self):
-        pass
-
-    @jsf.task
-    def main(self, board: Board):
-        board.main_loop(self)
+static_file_dir = os.path.join(app.root_path, 'static')
 
 
 @inject
 @app.route('/')
 def index(board: Board):
-    App.main(board)
-    return App.render(render_template('index.html'))
+    return render_template('index.html')
 
 
 @app.route('/favicon.ico')
@@ -45,32 +35,20 @@ def favicon():
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
-@app.route('/api/board/refresh', methods=['POST'])
-def refresh_board(board: Board):
-    board.refresh()
-    result = {'status': 'Ok'}
-    return jsonify(result)
+@app.route('/static/<path:path>', methods=['GET'])
+def serve_file_in_dir(path):
+    return send_from_directory(static_file_dir, path)
 
 
-@app.route('/api/board/message', methods=['PUT'])
-def put_board_message(board: Board):
-    payload = request.get_json()
-    if 'message' in payload:
-        board.set_message(payload['message'])
-    result = {'status': 'Ok'}
-    return jsonify(result)
+@app.route('/api/calendar', methods=['GET'])
+def query_calendar(board: Board):
+    result = board.query_calendar()
+    return jsonify([r.serialize() for r in result])
 
 
-@app.route('/api/board/status', methods=['PUT'])
-def put_board_status(board: Board):
-    board.set_status(request.get_json())
-    result = {'status': 'Ok'}
-    return jsonify(result)
-
-
-@app.route('/api/health', methods=['GET'])
-def get_health():
-    result = {'status': 'Ok'}
+@app.route('/api/image', methods=['GET'])
+def next_image(board: Board):
+    result = board.next_image()
     return jsonify(result)
 
 
@@ -105,15 +83,6 @@ def msg_authorized(msg_auth_handler: MicrosoftGraphAuthentication):
 def google_authorized(google_auth_handler: GoogleAuthenication):
     google_auth_handler.create_token(request)
     return redirect(url_for("index"))
-
-
-@inject
-@app.route("/logout")
-def logout():
-    session.clear()  # Wipe out user and its token cache from session
-    return redirect(  # Also logout from your tenant's web session
-        app_config.MSG_AUTHORITY + "/oauth2/v2.0/logout" +
-        "?post_logout_redirect_uri=" + url_for("index", _external=True))
 
 
 def parse_args():
@@ -152,6 +121,9 @@ if __name__ == "__main__":
             filename=args.logfile, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=args.loglevel)
 
         locale.setlocale(locale.LC_ALL, app_config.MSG_LOCALE)
+
+        if not os.path.exists(app_config.STATE_PATH):
+            os.makedirs(app_config.STATE_PATH)
 
         FlaskInjector(app=app, modules=[configure])
 
