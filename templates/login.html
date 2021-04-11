@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+</head>
+
+<body>
+    <h1>Family Board - data provider login</h1>
+
+    <li><a href='{{ msg_auth_url }}'>Sign In MS account / graph</a></li>
+    <li><a href='{{ google_auth_url }}'>Sign In Google account</a></li>
+    <li><a href="{{ url_for('index') }}">Homepage</a></li>
+</body>
+
+</html>
