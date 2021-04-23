@@ -32,7 +32,7 @@ class MicrosoftGraphCalendar:
             if pattern.match(calendar['name']):
                 logging.info('query calendar %s', calendar['name'])
 
-                url = f"{app_config.MSG_ENDPOINT_CALENDAR}/{calendar['id']}/calendarView?startDateTime={start}&endDateTime={end}&$select=subject,isAllDay,start,end"
+                url = f"{app_config.MSG_ENDPOINT_CALENDAR}/{calendar['id']}/calendarView?$top=999&startDateTime={start}&endDateTime={end}&$select=subject,isAllDay,start,end"
 
                 calendar_entries = self.graph.query(url, additional_headers={
                                                     'Prefer': f'outlook.timezone="{app_config.CALENDAR_TIMEZONE}"'}).json()['value']
