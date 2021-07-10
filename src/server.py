@@ -125,7 +125,9 @@ if __name__ == "__main__":
         if not os.path.exists(app_config.STATE_PATH):
             os.makedirs(app_config.STATE_PATH)
 
-        FlaskInjector(app=app, modules=[configure])
+        with app.test_request_context('/'), app.test_client() as c:
+            rv = c.post('/')
+            FlaskInjector(app=app, modules=[configure])
 
         # main process
         print_info(f'hosting on http://{args.address}:{args.port}')
